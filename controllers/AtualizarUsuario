@@ -1,0 +1,24 @@
+const Usuario = require("../models/Usuario");
+const { ConsultarUsuarioPeloID } = require("../utils/Database");
+
+function AtualizarUsuario(req, res) {
+    const { id } = req.params;
+    const { login, email, senha } = req.body;
+
+    if (!login && !email && !senha) {
+        return res.status(400).json({ error: "Pelo menos um campo deve ser fornecido para atualização." });
+    }
+
+    AtualizarUsuario(id, { login, email, senha })
+        .then(usuarioAtualizado => {
+            if (!usuarioAtualizado) return res.status(404).json({ error: "Usuário não encontrado." });
+            res.status(200).json({ message: "Usuário atualizado com sucesso!", usuario: usuarioAtualizado });
+        })
+        .catch(err => res.status(500).json({ error: "Erro ao atualizar o usuário.", detalhes: err.message }));
+}
+
+module.exports = {
+    main: AtualizarUsuario,
+    path: '/user/:id',
+    method: 'PUT'
+}
